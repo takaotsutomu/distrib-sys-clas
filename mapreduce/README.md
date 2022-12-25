@@ -1,0 +1,16 @@
+# Map/Reduce
+Map/Reduce system in which the `mapreduce` library provides a distributed, fault-tolerant Map/Reduce implementation. It has two modes of operation, sequential and distributed. In the sequential mode, the map and reduce tasks are all executed in serial. In the distributed mode tasks are handed out to multiple workers (threads within a UNIX process) to allow parallel computing. The interface to the `mapreduce` library and the approach to fault tolerance are similar to the ones described in the [MapReduce paper](https://research.google/pubs/pub62/). 
+
+The flow of the mapreduce implementation is as follows:
+1. The application provides a number of input files, a map function, a reduce function and the number of reduce tasks (`nReduce`)
+2. A master spins up a RPC server (see `mapreduce/master_rpc.go`), and waits for workers to register using the RPC call `Register()` defined in `mapreduce/master.go`. As tasks become available, `schedule()` – located in `mapreduce/shedule.go` – assigns those tasks to workers, and handle worker failures. 
+3. The master considers each input file one map task, and makes a call to `doMap()` in `mapreduce/common_map.go` at least once for each task. It does it by issuing the `DoTask` RPC – located in `mapreduce/worker.go` – on a worker. Each call to `doMap()` reads the appropriate file, calls the map function on the file’s contents, and produces `nReduce` files for each map file. Thus after all map tasks are done the total number of files will be the product of the number of map tasks (`nTask`) and `nReduce`.
+4. The master next makes a call to `doReduce()` in `mapreduce/common_reduce.go` at least once for each reduce task, through a worker. `doReduce()` collects corresponding `nTask` files from each of the map results, and runs the reduce function on each collection. This process produces `nReduce` files.
+5. The master calls `mr.merge()` in `mapreduce/master_splitemerge.go`, which merges all the `nReduce` files produced by the previous step into a single output. 
+6. The master sends a Shutdown RPC to each of its workers, and then shuts down its own RPC server.
+
+Two classic examples of Map/Reduce application were implemented. One is word count (see `main/word_count.go`) and the other is inverted index generation (see `main/inverted_indices.go`) for each valid word in a set of documents.  A valid word is any contiguous sequence of letters, as determined by unicode.IsLetter in the Go standard library. There are some input files with pathnames of the form `pg-*.txt` in the main directory, downloaded from Project Gutenberg to play with. The inverted index generation application outputs a list of tuples, one per line in the following format: 
+
+`word: #documents documents,sorted,and,separated,by,commas`
+
+In a real system the workers would run on a bunch of different machines, but in this project, they run a single machine. In order to run the workers on multiple machines over a network, modifications such as using TCP instead of UNIX-domain sockets, and a shared network file system like [GFS](https://research.google/pubs/pub51/) are required. 
