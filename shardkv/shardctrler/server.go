@@ -62,8 +62,8 @@ func (sc *ShardCtrler) Join(args *JoinArgs, reply *JoinReply) {
 	case <-time.After(1 * time.Second):
 		reply.Err = ErrOpFailed
 	}
-	close(ch)
 	sc.mu.Lock()
+	close(ch)
 	delete(sc.applied, index)
 	sc.mu.Unlock()
 }
@@ -101,8 +101,8 @@ func (sc *ShardCtrler) Leave(args *LeaveArgs, reply *LeaveReply) {
 	case <-time.After(1 * time.Second):
 		reply.Err = ErrOpFailed
 	}
-	close(ch)
 	sc.mu.Lock()
+	close(ch)
 	delete(sc.applied, index)
 	sc.mu.Unlock()
 }
@@ -140,8 +140,8 @@ func (sc *ShardCtrler) Move(args *MoveArgs, reply *MoveReply) {
 	case <-time.After(1 * time.Second):
 		reply.Err = ErrOpFailed
 	}
-	close(ch)
 	sc.mu.Lock()
+	close(ch)
 	delete(sc.applied, index)
 	sc.mu.Unlock()
 }
@@ -190,8 +190,8 @@ func (sc *ShardCtrler) Query(args *QueryArgs, reply *QueryReply) {
 	case <-time.After(1 * time.Second):
 		reply.Err = ErrOpFailed
 	}
-	close(ch)
 	sc.mu.Lock()
+	close(ch)
 	delete(sc.applied, index)
 	sc.mu.Unlock()
 }
@@ -306,7 +306,7 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister)
 							j := 0 // to index rShards
 							for _, shard := range rShards {
 								if load[joinGIDs[i]] >= minLoad {
-									continue
+									break
 								}
 								nextConfig.Shards[shard] = joinGIDs[i]
 								load[joinGIDs[i]]++

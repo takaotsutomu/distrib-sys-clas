@@ -97,8 +97,8 @@ func (kv *ShardKV) Get(args *GetArgs, reply *GetReply) {
 	case <-time.After(1 * time.Second):
 		reply.Err = ErrOpFailed
 	}
-	close(ch)
 	kv.mu.Lock()
+	close(ch)
 	delete(kv.applied, index)
 	kv.mu.Unlock()
 }
@@ -138,8 +138,8 @@ func (kv *ShardKV) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	case <-time.After(1 * time.Second):
 		reply.Err = ErrOpFailed
 	}
-	close(ch)
 	kv.mu.Lock()
+	close(ch)
 	delete(kv.applied, index)
 	kv.mu.Unlock()
 }
@@ -229,8 +229,8 @@ func (kv *ShardKV) GarbageCollection(args *GarbageCollectionArgs, reply *Garbage
 	case <-time.After(1 * time.Second):
 		reply.Err = ErrOpFailed
 	}
-	close(ch)
 	kv.mu.Lock()
+	close(ch)
 	delete(kv.applied, index)
 	kv.mu.Unlock()
 }
@@ -355,8 +355,7 @@ func StartServer(servers []*labrpc.ClientEnd, me int, persister *raft.Persister,
 								kv.srvShards[shard] = true
 							}
 							if len(curSrvShards) > 0 {
-								kv.outgoShards[kv.cfg.Num] =
-									map[int]map[string]string{}
+								kv.outgoShards[kv.cfg.Num] = map[int]map[string]string{}
 								for shard := range curSrvShards {
 									outgoData := map[string]string{}
 									for k, v := range kv.kvStore {

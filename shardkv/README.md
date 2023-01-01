@@ -53,7 +53,7 @@ Test: Minimal transfers after multileaves ...
 Test: Check Same config on servers ...
   ... Passed
 PASS
-ok      lab5/shardctrler        3.019s
+ok      lab5/shardctrler        2.721s
 
 ```
 ```
@@ -84,5 +84,5 @@ Test: unaffected shard access (challenge 2) ...
 Test: partial migration shard access (challenge 2) ...
   ... Passed
 PASS
-ok      lab5/shardkv  110.962s
+ok      lab5/shardkv    110.951s
 ```
