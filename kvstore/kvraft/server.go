@@ -83,8 +83,8 @@ func (kv *KVServer) Get(args *GetArgs, reply *GetReply) {
 	case <-time.After(1 * time.Second):
 		reply.Err = ErrOpFailed
 	}
-	close(ch)
 	kv.mu.Lock()
+	close(ch)
 	delete(kv.applied, index)
 	kv.mu.Unlock()
 }
@@ -124,8 +124,8 @@ func (kv *KVServer) PutAppend(args *PutAppendArgs, reply *PutAppendReply) {
 	case <-time.After(1 * time.Second):
 		reply.Err = ErrOpFailed
 	}
-	close(ch)
 	kv.mu.Lock()
+	close(ch)
 	delete(kv.applied, index)
 	kv.mu.Unlock()
 }
