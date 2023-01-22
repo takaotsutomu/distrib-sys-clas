@@ -384,7 +384,7 @@ func (rf *Raft) AppendEntries(args AppendEntriesArgs, reply *AppendEntriesReply)
 	// Instead of just replying false when log does not contain
 	// any entry at PrevLogIndex whos term matches prevLogTerm,
 	// as described in the paper, we do the following optimization
-	// to accelerate log backtracing:
+	// to accelerate log backtracking:
 	//
 	// - If a follower does not have prevLogIndex in its log,
 	//   it returns with conflictIndex = len(log) and
@@ -397,7 +397,7 @@ func (rf *Raft) AppendEntries(args AppendEntriesArgs, reply *AppendEntriesReply)
 	// The conflictIndex is returned as Xindex and the conflitTerm
 	// (if any) is returned as Xterm in AppendEntriesReply.
 	//
-	// The accelerated log backtracing optimization is mentioned
+	// The accelerated log backtracking optimization is mentioned
 	// in the paper but is very underspecidied. However it becomes
 	// necessary when the protocal is operated upon a slow and
 	// unreliable network, such as the one that the tests marked
